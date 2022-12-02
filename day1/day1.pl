@@ -1,3 +1,42 @@
+% X|Xs is a list of number with random values 'void' in between. the numbers between two voids or between the beginning (end) of list and a void identify calories of foods a particular elf is carrying. X|Xs could looke like a list of lists [[1, 2, 3], [6, 7, 8], [elf3], ...], but looks like [1, 2, 3, void, 6, 7, 8, void, elf3..]
+%calorie sums calculates the totals of each inner list in the input list
+calorie_sums([X|Xs], Sum, Sums) :- integer(X), Sum1 is Sum + X, calorie_sums(Xs, Sum1, Sums).
+calorie_sums([X|Xs], Sum, [Sum|Sums]) :- \+ integer(X), calorie_sums(Xs, 0, Sums).
+calorie_sums([], S, [S]).
+
+% finds max in a given list of numbers
+max([X, Y], X) :- X >= Y.
+max([X, Y], Y) :- Y > X.
+max([X, Y|Xs], Z) :- X >= Y, max([X|Xs], Z).
+max([X, Y|Xs], Z) :- X < Y, max([Y|Xs], Z).
+
+% merges two lists maintaining order; auxiliary predicate to help with merge_sort
+merge([], R, R).
+merge(L, [], L).
+merge([El|L], [Er|R], [El|M]) :- El < Er, merge(L, [Er|R], M).
+merge([El|L], [Er|R], [Er|M]) :- El >= Er, merge([El|L], R, M).
+
+% merge_sorts does merge sort does merge sort does m...
+merge_sort([X], [X]).
+merge_sort([X, Y], [X, Y]) :- X =< Y.
+merge_sort([X, Y], [Y, X]) :- X > Y.
+merge_sort(Xs, Ys) :-
+    length(Xs, L),
+    Half is L//2,
+    append(Left, Right, Xs),
+    length(Left, Half),
+    merge_sort(Left, Lsorted),
+    merge_sort(Right, Rsorted),
+    merge(Lsorted, Rsorted, Ys).
+
+% in a list of more than 2 elements, this identifies the last three
+last_three([A, B, C], [A, B, C]).
+last_three([A, B, C, D | M], [Aa, Bb, Cc]) :- last_three([B, C, D | M], [Aa, Bb, Cc]).
+
+% advent of code day 1 solutions
+solution1(Result) :- input(X), calorie_sums(X, 0, S), max(S, Result).
+solution2(Result) :- input(X), calorie_sums(X, 0, S), merge_sort(S, Sorted), last_three(Sorted, [A, B, C]), Result is A + B + C.
+
 input([8462,
 6981,
 3714,
@@ -2235,42 +2274,3 @@ void,
 8262,
 2666,
 7147]).
-
-% X|Xs is a list of number with random values 'void' in between. the numbers between two voids or between the beginning (end) of list and a void identify calories of foods a particular elf is carrying. X|Xs could looke like a list of lists [[1, 2, 3], [6, 7, 8], [elf3], ...], but looks like [1, 2, 3, void, 6, 7, 8, void, elf3..]
-%calorie sums calculates the totals of each inner list in the input list
-calorie_sums([X|Xs], Sum, Sums) :- integer(X), Sum1 is Sum + X, calorie_sums(Xs, Sum1, Sums).
-calorie_sums([X|Xs], Sum, [Sum|Sums]) :- \+ integer(X), calorie_sums(Xs, 0, Sums).
-calorie_sums([], S, [S]).
-
-% finds max in a given list of numbers
-max([X, Y], X) :- X >= Y.
-max([X, Y], Y) :- Y > X.
-max([X, Y|Xs], Z) :- X >= Y, max([X|Xs], Z).
-max([X, Y|Xs], Z) :- X < Y, max([Y|Xs], Z).
-
-% merges two lists maintaining order; auxiliary predicate to help with merge_sort
-merge([], R, R).
-merge(L, [], L).
-merge([El|L], [Er|R], [El|M]) :- El < Er, merge(L, [Er|R], M).
-merge([El|L], [Er|R], [Er|M]) :- El >= Er, merge([El|L], R, M).
-
-% merge_sorts does merge sort does merge sort does m...
-merge_sort([X], [X]).
-merge_sort([X, Y], [X, Y]) :- X =< Y.
-merge_sort([X, Y], [Y, X]) :- X > Y.
-merge_sort(Xs, Ys) :-
-    length(Xs, L),
-    Half is L//2,
-    append(Left, Right, Xs),
-    length(Left, Half),
-    merge_sort(Left, Lsorted),
-    merge_sort(Right, Rsorted),
-    merge(Lsorted, Rsorted, Ys).
-
-% in a list of more than 2 elements, this identifies the last three
-last_three([A, B, C], [A, B, C]).
-last_three([A, B, C, D | M], [Aa, Bb, Cc]) :- last_three([B, C, D | M], [Aa, Bb, Cc]).
-
-% advent of code day 1 solutions
-solution1(Result) :- input(X), calorie_sums(X, 0, S), max(S, Result).
-solution2(Result) :- input(X), calorie_sums(X, 0, S), merge_sort(S, Sorted), last_three(Sorted, [A, B, C]), Result is A + B + C.
