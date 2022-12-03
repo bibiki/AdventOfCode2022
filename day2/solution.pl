@@ -2,17 +2,17 @@ solution1(Result) :- input(X), total_score(X, 0, Result).
 solution2(Result) :- input(X), total_score_2(X, 0, Result).
 
 %-------------Part 2---------------------
-score_2(round(a, x), R) :- R is 3.
-score_2(round(a, y), R) :- R is 1 + 3.
-score_2(round(a, z), R) :- R is 2 + 6.
+score_2(round(a, x), 3).
+score_2(round(a, y), 4).
+score_2(round(a, z), 8).
 
-score_2(round(b, x), R) :- R is 1.
-score_2(round(b, y), R) :- R is 2 + 3.
-score_2(round(b, z), R) :- R is 3 + 6.
+score_2(round(b, x), 1).
+score_2(round(b, y), 5).
+score_2(round(b, z), 9).
 
-score_2(round(c, x), R) :- R is 2.
-score_2(round(c, y), R) :- R is 3 + 3.
-score_2(round(c, z), R) :- R is 1 + 6.
+score_2(round(c, x), 2).
+score_2(round(c, y), 6).
+score_2(round(c, z), 7).
 
 total_score_2([], X, X).
 total_score_2([R|Rs], A, Result) :- score_2(R, T), A1 is A + T, total_score_2(Rs, A1, Result).
