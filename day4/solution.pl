@@ -6,6 +6,13 @@ count([X|Xs], C) :- fully_contained(X), count(Xs, C1), C is C1 + 1.
 count([X|Xs], C) :- \+ fully_contained(X), count(Xs, C).
 
 %-----------part 2-------------------------------
+overlap(assignment(X-Y, W-Z)) :- Y >= W, X =< W.
+overlap(assignment(X-Y, W-Z)) :- Z =< Y, X >= W.
+
+count_overlaps([], 0).
+count_overlaps([X|Xs], C) :- overlap(X), count_overlaps(Xs, C1), C is C1 + 1.
+count_overlaps([X|Xs], C) :- \+ overlap(X), count_overlaps(Xs, C).
+
 %------------------------------------------------
 
 input([assignment(71-97,71-72),
