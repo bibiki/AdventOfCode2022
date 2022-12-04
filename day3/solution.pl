@@ -1,3 +1,5 @@
+all([a,'A',b,'B',c,'C',d,'D',e,'E',f,'F',g,'G',h,'H',i,'I',j,'J',k,'K',l,'L',m,'M',n,'N',o,'O',p,'P',q,'Q',r,'R',s,'S',t,'T',u,'U',v,'V',w,'W',x,'X',y,'Y',z,'Z']).
+
 priority(a, 1). priority('A', 27).
 priority(b, 2). priority('B', 28).
 priority(c, 3). priority('C', 29).
@@ -50,3 +52,36 @@ map_all([], []).
 map_all([X|Xs], [Xm|Xsm]) :- map_one(X, Xm), map_all(Xs, Xsm).
 
 solution1(Result) :- input_array(X), map_all(X, M), sum(M, Result).
+
+%------------------solution2--------------
+split_into_groups([A, B, C], [[A, B, C]]).
+split_into_groups([A, B, C|Rest], [[A, B, C]|RestGrouped]) :- split_into_groups(Rest, RestGrouped).
+
+% a faster intersect
+intersect_three(A, B, C, [], []).
+intersect_three(A, B, C, [F|Rest], [F|R]) :- write(F), nl, member(F, A), member(F, B), member(F, C), intersect_three(A, B, C, Rest, R).
+intersect_three(A, B, C, [F|Rest], R) :-
+    \+ member(F, A),
+    intersect_three(A, B, C, Rest, R).
+intersect_three(A, B, C, [F|Rest], R) :-
+    \+ member(F, B),
+    intersect_three(A, B, C, Rest, R).
+intersect_three(A, B, C, [F|Rest], R) :-
+    \+ member(F, C),
+    intersect_three(A, B, C, Rest, R).
+
+map_one_group([A, B, C], Result) :-
+    all(X),
+    atom_chars(A, Ac),
+    atom_chars(B, Bc),
+    atom_chars(C, Cc),
+    intersect_three(Ac, Bc, Cc, X, I), priority_sum(I, Result).
+
+map_all_groups([], []).
+map_all_groups([G|Gs], [Gm|Gsm]) :- map_one_group(G, Gm), map_all_groups(Gs, Gsm).
+
+solution2(Result) :-
+    input_array(X),
+    split_into_groups(X, Groups),
+    map_all_groups(Groups, GroupsMapped),
+    sum(GroupsMapped, Result).
