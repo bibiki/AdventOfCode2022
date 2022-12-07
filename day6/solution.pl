@@ -1,20 +1,8 @@
-stream_process([A, B, C, D|Rest], 4) :-
-    A \= B, A \= C, A \= D,
-    B \= C, B \= D,
-    C \= D.
+distinct([]).
+distinct([A|Rest]) :- \+ member(A, Rest), distinct(Rest).
 
-stream_process([A, B, C, D | Rest], Rez) :-
-    A == B, stream_process([B, C, D|Rest], Rez1), Rez is Rez1 + 1.
-stream_process([A, B, C, D | Rest], Rez) :-
-    A == C, stream_process([B, C, D|Rest], Rez1), Rez is Rez1 + 1.
-stream_process([A, B, C, D | Rest], Rez) :-
-    A == D, stream_process([B, C, D|Rest], Rez1), Rez is Rez1 + 1.
-stream_process([A, B, C, D | Rest], Rez) :-
-    B == C, stream_process([B, C, D|Rest], Rez1), Rez is Rez1 + 1.
-stream_process([A, B, C, D | Rest], Rez) :-
-    B == D, stream_process([B, C, D|Rest], Rez1), Rez is Rez1 + 1.
-stream_process([A, B, C, D | Rest], Rez) :-
-    C == D, stream_process([B, C, D|Rest], Rez1), Rez is Rez1 + 1.
+stream_process([A, B, C, D|Rest], 4) :- distinct([A, B, C, D]).
+stream_process([A, B, C, D|Rest], Rez) :- \+ distinct([A, B, C, D]), stream_process([B, C, D|Rest], Rez1), Rez is Rez1 + 1.
 
 solution1(Result) :- input(X), atom_chars(X, Stream), stream_process(Stream, Result).
 
