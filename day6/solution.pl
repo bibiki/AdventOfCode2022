@@ -1,3 +1,12 @@
+%--------------------part 2-------
+stream_process_for_message([A, B, C, D, E, F, G, H, I, J, K, L, M, N|Rest], 14) :- distinct([A, B, C, D, E, F, G, H, I, J, K, L, M, N]).
+stream_process_for_message([A, B, C, D, E, F, G, H, I, J, K, L, M, N|Rest], Rez) :-
+    \+ distinct([A, B, C, D, E, F, G, H, I, J, K, L, M, N]),
+    stream_process_for_message([B, C, D, E, F, G, H, I, J, K, L, M, N|Rest], Rez1), Rez is Rez1 + 1.
+
+solution2(Result) :- input(X), atom_chars(X, Stream), stream_process_for_message(Stream, Result).
+%---------------------------------
+
 distinct([]).
 distinct([A|Rest]) :- \+ member(A, Rest), distinct(Rest).
 
