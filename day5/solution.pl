@@ -1,3 +1,19 @@
+solution1(Result) :- stack(Stack), instructions(Moves), make_moves(Moves, Stack, NewStack), show_message(NewStack, Result).
+solution2(Result) :- stack(Stack), instructions(Moves), make_moves_9001(Moves, Stack, NewStack), show_message(NewStack, Result).
+%--------------------part 2---------
+make_move_9001(move(C, F, T), Stack, NewStack) :-
+    get_(F, Stack, From),
+    get_(T, Stack, To),
+    append(Left, NewFrom, From),
+    length(Left, C),
+    append(Left, To, NewTo),
+    replace(F, NewFrom, Stack, Temp),
+    replace(T, NewTo, Temp, NewStack).
+
+make_moves_9001([], Stack, Stack).
+make_moves_9001([First|Moves], Stack, NewStack) :- make_move_9001(First, Stack, Temp), make_moves_9001(Moves, Temp, NewStack).
+%-------------------------------------
+
 show_message([], []).
 show_message([[H|Head]|Stack], [H|R]) :- show_message(Stack, R).
 
