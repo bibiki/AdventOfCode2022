@@ -1,3 +1,13 @@
+%-----------------Part 2-------------
+%------------------------------------
+solution1(Result) :-
+    input(X),
+    process(X, [], [], Processed),
+    all_dirs(Processed, [], Dirs),
+    find_total_each_dir(Dirs, Processed, Result),
+    filter(Result, 100000, Filtered),
+    sum(Filtered, Result).
+
 sum([], 0).
 sum([F|Rest], S) :- sum(Rest, S1), S is S1 + F.
 
@@ -7,7 +17,7 @@ filter([Num|Nums], Max, Filtered) :- Num > Max, filter(Nums, Max, Filtered).
 
 find_total_each_dir([], Processed, []).
 find_total_each_dir([Dir|Dirs], Processed, [First|Result]) :-
-    length(Dirs, L), write(L), nl,
+    length(Dirs, L),
     find_total_one_dir(Dir, Processed, First),
     find_total_each_dir(Dirs, Processed, Result).
 
