@@ -1,11 +1,30 @@
 %-----------------Part 2-------------
+closest_but_higher_than(Needed, [], Result, Result).
+closest_but_higher_than(Needed, [S|Sizes], Current, Result) :-
+    S >= Needed,
+    S =< Current,
+    closest_but_higher_than(Needed, Sizes, S, Result).
+
+closest_but_higher_than(Needed, [S|Sizes], Current, Result) :-
+    S < Needed,
+    closest_but_higher_than(Needed, Sizes, Current, Result).
+
+closest_but_higher_than(Needed, [S|Sizes], Current, Result) :-
+    S > Current,
+    closest_but_higher_than(Needed, Sizes, Current, Result).
+
+solution2(Result) :-
+    Needed is 30000000 - 70000000 + 43629016,
+    input(X),
+    process(X, [], [], Dirs, [], Processed),
+    find_total_each_dir(Dirs, Processed, Sizes),
+    closest_but_higher_than(Needed, Sizes, 70000000, Result).
 %------------------------------------
 solution1(Result) :-
     input(X),
-    process(X, [], [], Processed),
-    all_dirs(Processed, [], Dirs),
-    find_total_each_dir(Dirs, Processed, Result),
-    filter(Result, 100000, Filtered),
+    process(X, [], [], Dirs, [], Processed),
+    find_total_each_dir(Dirs, Processed, Totals),
+    filter(Totals, 100000, Filtered),
     sum(Filtered, Result).
 
 sum([], 0).
@@ -17,7 +36,6 @@ filter([Num|Nums], Max, Filtered) :- Num > Max, filter(Nums, Max, Filtered).
 
 find_total_each_dir([], Processed, []).
 find_total_each_dir([Dir|Dirs], Processed, [First|Result]) :-
-    length(Dirs, L),
     find_total_one_dir(Dir, Processed, First),
     find_total_each_dir(Dirs, Processed, Result).
 
@@ -31,51 +49,41 @@ find_total_one_dir(Dir, [[P, T]|Processed], Total) :-
     find_total_one_dir(Dir, Processed, Total).
 
 
-all_dirs([], Acc, Acc).
-all_dirs([First|Processed], Acc, Result) :- append([D], RestInfo, First), \+ member(D, Acc), all_dirs(Processed, [D|Acc], Result).
-all_dirs([First|Processed], Acc, Result) :- append([D], RestInfo, First), member(D, Acc), all_dirs(Processed, Acc, Result).
-
-process([], Current, P, [Current|P]).
-process([L|Lines], [[C|Current], Total], Paths, P) :-
+process([], Current, D, D, P, P).
+process([L|Lines], [[C|Current], Total], Dirs, D, Paths, P) :-
     arg(1, L, cd),
     arg(2, L, ".."),
-    append(X, [[[C|Current], T]|Rest], Paths),
-    UpdatedTotal is T + Total,
-    append(X, [[[C|Current], UpdatedTotal]|Rest], NewPaths),
-    process(Lines, [Current, T], NewPaths, P). 
+    process(Lines, [Current, 0], Dirs, D, Paths, P). 
 
-process([L|Lines], [[C|Current], Total], Paths, P) :-
-    arg(1, L, cd),
-    arg(2, L, ".."),
-    \+ append(X, [[[C|Current], T]|Rest], Paths),
-    append([[[C|Current], Total]], Paths, NewPaths),
-    process(Lines, [Current, 0], NewPaths, P). 
-
-process([L|Lines], [Current, Total], Paths, P) :-
+process([L|Lines], [Current, Total], Dirs, D,  Paths, P) :-
     arg(1, L, cd),
     arg(2, L, Dir),
     Dir \= "..",
     append([Dir], Current, NewCurrent),
-    append([[Current, Total]], Paths, NewPaths),
-    process(Lines, [NewCurrent, 0], NewPaths, P).
+    process(Lines, [NewCurrent, 0], Dirs, D, Paths, P).
 
-process([L|Lines], Current, Paths, P) :-
+process([L|Lines], Current, Dirs, D, Paths, P) :-
     arg(1, L, cd),
     arg(2, L, Dir),
     Dir = "/",
-    process(Lines, [["/"], 0], [], P).
+    process(Lines, [["/"], 0], [["/"]], D, [], P).
 
-process([L|Lines], Current, Paths, P) :- arg(1, L, ls), process(Lines, Current, Paths, P).
+process([L|Lines], Current, Dirs, D, Paths, P) :- arg(1, L, ls), process(Lines, Current, Dirs, D, Paths, P).
 
-process([L|Lines], Current, Paths, P) :-
+process([L|Lines], [Current, Total], Dirs, D, Paths, P) :-
     arg(1, L, dir),
-    process(Lines, Current, Paths, P).
+    arg(2, L, Dir),
+    append([Dir], Current, ADir),
+    append([ADir], Dirs, NewDirs),
+    process(Lines, [Current, Total], NewDirs, D, Paths, P).
 
-process([L|Lines], [Current, Total], Paths, P) :-
+process([L|Lines], [Current, Total], Dirs, D, Paths, P) :-
     arg(1, L, X),
     integer(X),
-    NewTotal is Total + X,
-    process(Lines, [Current, NewTotal], Paths, P).
+    arg(2, L, Y),
+    append([Y], Current, NewCurrent),
+    append([[NewCurrent, X]], Paths, NewPaths),
+    process(Lines, [Current, 0], Dirs, D, NewPaths, P).
 
 input([
 line(cd, "/"),
