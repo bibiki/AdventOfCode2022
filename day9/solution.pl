@@ -1,3 +1,41 @@
+%-------------------------Part 2-----------
+sample2([move(r, 5),
+move(u, 8),
+move(l, 8),
+move(d, 3),
+move(r, 17),
+move(d, 10),
+move(l, 25),
+move(u, 20)]).
+
+next_knots(Head, [], []).
+next_knots(Head, [Knot|Knots], [NextKnot|NextKnots]) :-
+    next_tail(Head, Knot, NextKnot),
+    next_knots(NextKnot, Knots, NextKnots).
+
+add_knot_traces([], Trace, Trace).
+add_knot_traces(Traces, Trace, Trace) :- 
+    append(X, [Tail], Traces),
+    member(Tail, Trace).
+add_knot_traces(Traces, Tr, Trace) :-
+        append(X, [Tail], Traces),
+        \+ member(Tail, Tr),
+        append([Tail], Tr, Trace).
+
+trace_move_many_knots(move(Direction, 0), Head, Head, Knots, Knots, Trace, Trace).
+trace_move_many_knots(move(Direction, Steps), Head, H, Knots, K, Trace, Tr) :-
+    S is Steps - 1,
+    next_head(Direction, Head, NextHead),
+    next_knots(NextHead, Knots, NextKnots),
+    add_knot_traces(NextKnots, Trace, NextTrace),
+    trace_move_many_knots(move(Direction, S), NextHead, H, NextKnots, K, NextTrace, Tr).
+
+make_moves_with_many_knots([], Head, Knots, Trace, Trace).
+make_moves_with_many_knots([Move|Moves], Head, Knots, Trace, T) :-
+    trace_move_many_knots(Move, Head, NextHead, Knots, NextKnots, Trace, NextTrace),
+    make_moves_with_many_knots(Moves, NextHead, NextKnots, NextTrace, T).
+
+%------------------------------------------
 print_array([]).
 print_array([X|Xs]) :- write(X), nl, print_array(Xs).
 
