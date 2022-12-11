@@ -1,3 +1,77 @@
+%---------------------------------Part 2---------------
+max([X, Y], X) :- X >= Y.
+max([X, Y], Y) :- Y > X.
+max([X, Y|Xs], Z) :- X >= Y, max([X|Xs], Z).
+max([X, Y|Xs], Z) :- X < Y, max([Y|Xs], Z).
+
+multiply_rows([], [], [], [], []).
+multiply_rows([A|Ar], [B|Br], [C|Cr], [D|Dr], [First|Rest]) :-
+    First is A*B*C*D,
+    multiply_rows(Ar, Br, Cr, Dr, Rest).
+
+multiply_tables([], [], [], [], []).
+multiply_tables([A|At], [B|Bt], [C|Ct], [D|Dt], [First|Rest]) :-
+    multiply_rows(A, B, C, D, First),
+    multiply_tables(At, Bt, Ct, Dt, Rest).
+
+map_to_maxis([], []).
+map_to_maxis([Row|Table], [M|Rest]) :-
+    max(Row, M),
+    map_to_maxis(Table, Rest).
+
+solution2(Result) :-
+    input(X),
+    build_map(X, Map),
+    count_rights_table(Map, Rights),
+    count_lefts_table(Map, Lefts),
+    arotate(Map, UpDown),
+    count_rights_table(UpDown, Downs),
+    count_lefts_table(UpDown, Ups),
+    arotate(Ups, RUps),
+    arotate(Downs, RDowns),
+    multiply_tables(Lefts, Rights, RDowns, RUps, Multiplied),
+    map_to_maxis(Multiplied, Maxis),
+    max(Maxis, Result).
+
+count_rights_table([], []).
+
+count_rights_table([Row|Table], [RowCounted|TableCounted]) :-
+    count_rights(Row, RowCounted),
+    count_rights_table(Table, TableCounted).
+
+count_lefts_table([], []).
+count_lefts_table([Row|Table], [RowCounted|TableCounted]) :-
+    count_lefts(Row, RowCounted),
+    count_lefts_table(Table, TableCounted).
+
+count_rights([], []).
+count_rights([T|Tree], [Tright|Rest]) :-
+    first_count_right([T|Tree], Tright),
+    count_rights(Tree, Rest).
+
+first_count_right([One], 0).
+first_count_right([T, N|Trees], 1) :- T =< N.
+first_count_right([T, N|Trees], Rez) :- T > N, first_count_right([T|Trees], Rez1), Rez is Rez1 + 1.
+
+count_lefts([], []).
+count_lefts(Tree, Result) :-
+    last_count_lefts(Tree, Last),
+    append(Left, [LastTree], Tree),
+    count_lefts(Left, LeftResult),
+    append(LeftResult, [Last], Result).
+
+last_count_lefts([One], 0).
+last_count_lefts(Trees, 1) :-
+    append(NextTress, [Previous, Current], Trees),
+    Previous >= Current.
+last_count_lefts(Trees, Rez) :-
+    append(NextTress, [Previous, Current], Trees),
+    Previous < Current,
+    append(NextTress, [Current], T),
+    last_count_lefts(T, Rez1),
+    Rez is Rez1 + 1.
+
+%------------------------------------------------------
 awithout_first_column([[R|Row]|Table], [Row|Rest]) :- awithout_first_column(Table, Rest).
 awithout_first_column(R, []).
 
