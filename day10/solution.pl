@@ -1,3 +1,36 @@
+%-------------------Part 2-------------
+new_line(40) :- nl.
+new_line(X).
+
+print_pixel(Crt, Cycle) :-
+    Crt = Cycle, write('#'), new_line(Cycle).
+print_pixel(Crt, Cycle) :-
+    Cycle is Crt + 1, write('#'), new_line(Cycle).
+print_pixel(Crt, Cycle) :-
+    Cycle is Crt + 2, write('#'), new_line(Cycle).
+
+print_pixel(Crt, Cycle) :- write('.'), new_line(Cycle).
+
+next_cycle(40, 1).
+next_cycle(C, C1) :- C1 is C + 1.
+
+drawing([], X, Cycle, Counter).
+drawing([instruction(noop)|Instructions], X, Cycle, Counter) :-
+    print_pixel(X, Cycle),
+    next_cycle(Cycle, C1),
+    drawing(Instructions, X, C1, 1).
+
+drawing([instruction(addx, N)|Instructions], X, Cycle, 1) :-
+    print_pixel(X, Cycle),
+    next_cycle(Cycle, C1),
+    drawing([instruction(addx, N)|Instructions], X, C1, 2).
+
+drawing([instruction(addx, N)|Instructions], X, Cycle, 2) :-
+    print_pixel(X, Cycle),
+    next_cycle(Cycle, C1),
+    X1 is X + N,
+    drawing(Instructions, X1, C1, 1).
+%--------------------------------------
 solution1(Result) :-
     Counter is 1,
     Cycle is 1,
