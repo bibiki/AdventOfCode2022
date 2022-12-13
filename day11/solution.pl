@@ -1,7 +1,7 @@
 solution(Z, O, T, THR, FR, FV, SX, SVN) :-
     % determine the two most active via visual inspection of monkies activities
     monkey(0, Zero), monkey(1, One), monkey(2, Two), monkey(3, Three), monkey(4, Four), monkey(5, Five), monkey(6, Six), monkey(7, Seven),
-    monkey_business(Zero, One, Two, Three, Four, Five, Six, Seven, 20, Z, O, T, THR, FR, FV, SX, SVN).
+    monkey_business(Zero, One, Two, Three, Four, Five, Six, Seven, 10000, Z, O, T, THR, FR, FV, SX, SVN).
 
 monkey(0, [0, 0, [97, 81, 57, 57, 91, 61]]).
 monkey(1, [1, 0, [88, 62, 68, 90]]).
@@ -11,6 +11,12 @@ monkey(4, [4, 0, [57]]).
 monkey(5, [5, 0, [54, 84, 91, 55, 59, 72, 75, 70]]).
 monkey(6, [6, 0, [95, 79, 79, 68, 78]]).
 monkey(7, [7, 0, [61, 97, 67]]).
+
+
+%manage_worry(New, NewItem) :- NewItem is New // 3.
+rotator(9699690).
+rem(N, R) :- rotator(Q), R1 is N // Q, N1 is R1 * Q, R is N - N1.
+manage_worry(New, NewItem) :- rem(New, NewItem).
 
 monkey_business(Z, O, T, THREE, F, FIVE, S, SEVEN, 0, Z, O, T, THREE, F, FIVE, S, SEVEN).
 
@@ -42,7 +48,7 @@ operation([0, A1, [Old|Rest]], [5, A2, Items],
           [0, A11, Rest], [5, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old * 7,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     is_divisible(NewItem, 11),
     append(Items, [NewItem], NewItems).
 
@@ -50,7 +56,7 @@ operation([0, A1, [Old|Rest]], [6, A2, Items],
           [0, A11, Rest], [6, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old * 7,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     \+ is_divisible(NewItem, 11),
     append(Items, [NewItem], NewItems).
 
@@ -58,7 +64,7 @@ operation([1, A1, [Old|Rest]], [4, A2, Items],
           [1, A11, Rest], [4, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old * 17,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     is_divisible(NewItem, 19),
     append(Items, [NewItem], NewItems).
 
@@ -66,7 +72,7 @@ operation([1, A1, [Old|Rest]], [2, A2, Items],
           [1, A11, Rest], [2, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old * 17,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     \+ is_divisible(NewItem, 19),
     append(Items, [NewItem], NewItems).
 
@@ -74,7 +80,7 @@ operation([2, A1, [Old|Rest]], [7, A2, Items],
           [2, A11, Rest], [7, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 2,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     is_divisible(NewItem, 5),
     append(Items, [NewItem], NewItems).
 
@@ -82,7 +88,7 @@ operation([2, A1, [Old|Rest]], [4, A2, Items],
           [2, A11, Rest], [4, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 2,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     \+ is_divisible(NewItem, 5),
     append(Items, [NewItem], NewItems).
 
@@ -90,7 +96,7 @@ operation([3, A1, [Old|Rest]], [2, A2, Items],
           [3, A11, Rest], [2, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 1,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     is_divisible(NewItem, 2),
     append(Items, [NewItem], NewItems).
 
@@ -98,7 +104,7 @@ operation([3, A1, [Old|Rest]], [1, A2, Items],
           [3, A11, Rest], [1, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 1,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     \+ is_divisible(NewItem, 2),
     append(Items, [NewItem], NewItems).
 
@@ -106,7 +112,7 @@ operation([4, A1, [Old|Rest]], [7, A2, Items],
           [4, A11, Rest], [7, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 6,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     is_divisible(NewItem, 13),
     append(Items, [NewItem], NewItems).
 
@@ -114,7 +120,7 @@ operation([4, A1, [Old|Rest]], [0, A2, Items],
           [4, A11, Rest], [0, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 6,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     \+ is_divisible(NewItem, 13),
     append(Items, [NewItem], NewItems).
 
@@ -122,7 +128,7 @@ operation([5, A1, [Old|Rest]], [6, A2, Items],
           [5, A11, Rest], [6, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old * Old,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     is_divisible(NewItem, 7),
     append(Items, [NewItem], NewItems).
 
@@ -130,14 +136,14 @@ operation([5, A1, [Old|Rest]], [3, A2, Items],
           [5, A11, Rest], [3, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old * Old,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     \+ is_divisible(NewItem, 7),
     append(Items, [NewItem], NewItems).
 
 operation([6, A1, [Old|Rest]], [1, A2, Items],
           [6, A11, Rest], [1, A2, NewItems]) :-
     New is Old + 3,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     is_divisible(NewItem, 3),
     A11 is A1 + 1,
     append(Items, [NewItem], NewItems).
@@ -146,7 +152,7 @@ operation([6, A1, [Old|Rest]], [3, A2, Items],
           [6, A11, Rest], [3, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 3,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     \+ is_divisible(NewItem, 3),
     append(Items, [NewItem], NewItems).
 
@@ -154,7 +160,7 @@ operation([7, A1, [Old|Rest]], [0, A2, Items],
          [7, A11, Rest], [0, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 4,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     is_divisible(NewItem, 17),
     append(Items, [NewItem], NewItems).
 
@@ -162,7 +168,7 @@ operation([7, A1, [Old|Rest]], [5, A2, Items],
           [7, A11, Rest], [5, A2, NewItems]) :-
     A11 is A1 + 1,
     New is Old + 4,
-    NewItem is New // 3,
+    manage_worry(New, NewItem),
     \+ is_divisible(NewItem, 17),
     append(Items, [NewItem], NewItems).
 
