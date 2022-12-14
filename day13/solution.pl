@@ -1,3 +1,27 @@
+%----------Part 2---------------
+gsort([], []).
+gsort([A], [A]).
+gsort([A, B], [A, B]) :- well_ordered(A, B).
+gsort([A, B], [B, A]) :- \+ well_ordered(A, B).
+gsort([A, B|Rest], Sorted) :- write([A, B]), nl, gsort([A, B], [C, D]), gsort(Rest, RestSorted), merge([C, D], RestSorted, Sorted).
+
+merge(X, [], X).
+merge([], X, X).
+merge([X|Xs], [Y|Ys], [X|Rest]) :- well_ordered(X, Y), merge(Xs, [Y|Ys], Rest).
+merge([X|Xs], [Y|Ys], [Y|Rest]) :- \+ well_ordered(X, Y), merge([X|Xs], Ys, Rest).
+
+
+find_index([E|List], E, 1).
+find_index([E|List], C, Index) :- E \= C, find_index(List, C, I), Index is I + 1.
+
+solution2(Result) :-
+    input(X),
+    gsort(X, Sorted),
+    merge([[[2]], [[6]]], Sorted, S),
+    find_index(S, [[2]], Two),
+    find_index(S, [[6]], Six),
+    Result is Two * Six.
+%-------------------------------
 solution1(Result) :- input(X), count_ordered(X, 1, Indices), sum(Indices, Result).
 
 sum([], 0).
