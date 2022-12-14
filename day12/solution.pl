@@ -1,35 +1,56 @@
-keep_distinct([F], [F]).
-keep_distinct([F|Rest], [F|Result]) :- \+ member(F, Rest), keep_distinct(Rest, Result).
-keep_distinct([F|Rest], Result) :- member(F, Rest), keep_distinct(Rest, Result).
+%--------------------Part 2------------
+next_position_reverse([X, Y], move(A, B), Map, [NextX, NextY]) :-
+    NextX is X + A,
+    on_grid(NextX),
+    NextY is Y + B,
+    on_grid(NextY),
+    current_strength(Map, [X, Y], S1),
+    current_strength(Map, [NextX, NextY], S2),
+    can_move_to(S2, S1).
 
-make_all_valid_moves(P, Map, NextP) :-
+next_position_reverse([X, Y], M, Map, [X, Y]).
+
+make_all_valid_moves_reverse(P, Map, [Pup, Pdown, Pleft, Pright]) :-
+    next_position_reverse(P, move(0, -1), Map, Pup),
+    next_position_reverse(P, move(0, 1), Map, Pdown),
+    next_position_reverse(P, move(-1, 0), Map, Pleft),
+    next_position_reverse(P, move(1, 0), Map, Pright).
+
+solution2(Result) :-
+    map(Map), count_path(Map, [[145, 20]], 0, Result, []).
+%--------------------------------------
+solution1(Result) :-
+    map(Map), count_path(Map, [[0, 20]], 0, Result, []).
+
+keep_distinct([], Acc, Acc).
+keep_distinct([F|Rest], Acc, Result) :- \+ member(F, Acc), keep_distinct(Rest, [F|Acc], Result).
+keep_distinct([F|Rest], Acc, Result) :- member(F, Acc), keep_distinct(Rest, Acc, Result).
+
+make_all_valid_moves(P, Map, [Pup, Pdown, Pleft, Pright]) :-
     next_position(P, move(0, -1), Map, Pup),
     next_position(P, move(0, 1), Map, Pdown),
     next_position(P, move(-1, 0), Map, Pleft),
-    next_position(P, move(1, 0), Map, Pright),
-    append([Pup], [Pdown], UD),
-    append([Pleft], [Pright], LR),
-    append(UD, LR, NextP).
+    next_position(P, move(1, 0), Map, Pright).
 
-remove_visited([], Visited, []).
-remove_visited([F|Rest], Visited, [F|Result]) :- \+ member(F, Visited), remove_visited(Rest, Visited, Result).
-remove_visited([F|Rest], Visited, Result) :- member(F, Visited), remove_visited(Rest, Visited, Result).
+remove_visited([], Visited, Acc, Acc).
+remove_visited([F|Rest], Visited, Acc, Result) :- \+ member(F, Visited), remove_visited(Rest, Visited, [F|Acc], Result).
+remove_visited([F|Rest], Visited, Acc, Result) :- member(F, Visited), remove_visited(Rest, Visited, Acc, Result).
 
 make_moves([], Map, Acc, AccDistinct, Visited) :- 
-    keep_distinct(Acc, Acc1),
-    remove_visited(Acc1, Visited, AccDistinct).
+    keep_distinct(Acc, [], Acc1),
+    remove_visited(Acc1, Visited, [], AccDistinct).
 make_moves([P|Rest], Map, Acc, NextP, Visited) :-
-    make_all_valid_moves(P, Map, T),
+%    make_all_valid_moves(P, Map, T), % for part 1
+    make_all_valid_moves_reverse(P, Map, T), % for part 2
     append(T, Acc, Acc1),
     make_moves(Rest, Map, Acc1, NextP, Visited).
 
-is_on_goal([F|Rest], Map) :- current_strength(Map, F, goal).
+is_on_goal([F|Rest], Map) :- current_strength(Map, F, a).
+%is_on_goal([F|Rest], Map) :- current_strength(Map, F, goal).
 is_on_goal([F|Rest], Map) :- is_on_goal(Rest, Map).
 
-count_path(Map, [], C, C, V) :- write('how on earth can you get here').
 count_path(Map, Positions, C, C, V) :- is_on_goal(Positions, Map).
 count_path(Map, Positions, C, Result, Visited) :-
-    write(C), nl,
     \+ is_on_goal(Positions, Map),
     make_moves(Positions, Map, [], NextPositions, Visited),
     append(NextPositions, Visited, V),
@@ -45,12 +66,14 @@ can_move_to(X, Y) :- next(X, Y).
 can_move_to(X, Y) :- next(Y, X).
 can_move_to(X, Y) :- before(Y, X).
 
-elem(0, [S|Row], S).
-elem(Y, [S1|Row], S) :- Y1 is Y - 1, elem(Y1, Row, S).
+elem(E, Row, S) :-
+    length(Left, E),
+    append(Left, [S|Right], Row).
 
 current_strength([Row|Map], [X, 0], S) :- elem(X, Row, S).
-current_strength([Row|Map], [X, Y], S) :-
-    Y1 is Y - 1, current_strength(Map, [X, Y1], S).
+current_strength(Map, [X, Y], S) :-
+    elem(Y, Map, Row),
+    elem(X, Row, S).
 
 on_grid(X) :- X > -1, X < 167.
 
