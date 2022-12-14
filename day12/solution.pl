@@ -45,8 +45,8 @@ make_moves([P|Rest], Map, Acc, NextP, Visited) :-
     append(T, Acc, Acc1),
     make_moves(Rest, Map, Acc1, NextP, Visited).
 
-is_on_goal([F|Rest], Map) :- current_strength(Map, F, a).
-%is_on_goal([F|Rest], Map) :- current_strength(Map, F, goal).
+is_on_goal([F|Rest], Map) :- current_strength(Map, F, a). % for part 2
+%is_on_goal([F|Rest], Map) :- current_strength(Map, F, goal). % for part 1
 is_on_goal([F|Rest], Map) :- is_on_goal(Rest, Map).
 
 count_path(Map, Positions, C, C, V) :- is_on_goal(Positions, Map).
