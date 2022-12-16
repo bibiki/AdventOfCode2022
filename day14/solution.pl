@@ -14,7 +14,7 @@ solution2_sample(Result) :-
     append(T, [Floor], Cave),
     sample_lines(Lines),
     init(Lines, Cave, Initialized),
-    keep_sand_flowing(Initialized, 1, Result, [12, 0]).
+    keep_sand_flowing(Initialized, 0, Result, [12, 0]).
 
 solution1(Result) :-
     start_a_grid(13, 11, Cave), sample_lines(Lines), init(Lines, Cave, Initialized), keep_sand_flowing(Initialized, 0, Result, [6, 0]).
@@ -73,7 +73,7 @@ keep_sand_flowing(Cave, Count, Num, [StartX, StartY]) :-
     Count1 is Count + 1,
     place_sand(Cave, [StartX, StartY], Cave1),
     Cave \= Cave1,
-    write(Count), nl,
+    write(Count1), nl,
     keep_sand_flowing(Cave1, Count1, Num, [StartX, StartY]).
 
 keep_sand_flowing(Cave, Count, Count, Start).
