@@ -1,8 +1,24 @@
 % my largest x 534
 % my largest y 168
+solution2(Result) :-
+    start_a_grid(170, 670, T),
+    give_me(670, rok, Floor),
+    append(T, [Floor], Cave),
+    input(Lines),
+    init(Lines, Cave, Initialized),
+    keep_sand_flowing(Initialized, 1, Result, [500, 0]).
+
+solution2_sample(Result) :-
+    start_a_grid(11, 25, T),
+    give_me(25, rok, Floor),
+    append(T, [Floor], Cave),
+    sample_lines(Lines),
+    init(Lines, Cave, Initialized),
+    keep_sand_flowing(Initialized, 1, Result, [12, 0]).
+
 solution1(Result) :-
-%    start_a_grid(13, 11, Cave), sample_lines(Lines), init(Lines, Cave, Initialized), keep_sand_flowing(Initialized, 0, Result, [6, 0]).
-    start_a_grid(169, 535, Cave), input(Lines), init(Lines, Cave, Initialized), keep_sand_flowing(Initialized, 0, Result, [500, 0]).
+    start_a_grid(13, 11, Cave), sample_lines(Lines), init(Lines, Cave, Initialized), keep_sand_flowing(Initialized, 0, Result, [6, 0]).
+%    start_a_grid(169, 535, Cave), input(Lines), init(Lines, Cave, Initialized), keep_sand_flowing(Initialized, 0, Result, [500, 0]).
 
 start_a_grid(Xlength, Ylength, Result) :- give_me(Ylength, air, Row), give_me(Xlength, Row, Result).
 
@@ -57,6 +73,7 @@ keep_sand_flowing(Cave, Count, Num, [StartX, StartY]) :-
     Count1 is Count + 1,
     place_sand(Cave, [StartX, StartY], Cave1),
     Cave \= Cave1,
+    write(Count), nl,
     keep_sand_flowing(Cave1, Count1, Num, [StartX, StartY]).
 
 keep_sand_flowing(Cave, Count, Count, Start).
@@ -87,6 +104,9 @@ sample_cave_start([
 [air,air,air,air,air,air,air,air,air,air],
 [air,air,air,air,air,air,air,air,air,air]]).
 
+
+sample_lines2([[[9,4], [9, 6], [7,6]],
+              [[14,4], [13,4], [13,9], [5,9]]]).
 
 sample_lines([[[4,4], [4,6], [2,6]],
               [[9,4], [8,4], [8,9], [0,9]]]).
