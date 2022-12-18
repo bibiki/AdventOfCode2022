@@ -71,6 +71,7 @@ place_sand(Cave, [SandX, SandY], C) :-
 
 keep_sand_flowing(Cave, Count, Num, [StartX, StartY]) :-
     Count1 is Count + 1,
+    write([StartX, StartY]), nl,
     place_sand(Cave, [StartX, StartY], Cave1),
     Cave \= Cave1,
     write(Count1), nl,
