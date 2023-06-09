@@ -47,6 +47,11 @@
                     (14, 3,15, 3),
                     (20, 1,15, 3)))
 
+(defn abs [x] (if (> x 0) x (- x)))
+
+(defn distance [[a b c d]]
+  (+ (abs (- c a)) (abs (- d b))))
+
 (defn is-near [x y [a b c d]]
   (let [d1 (distance [a b c d])
         d2 (distance [a b x y])]
@@ -65,12 +70,40 @@
     (inc acc)
     acc))
 
-(defn abs [x] (if (> x 0) x (- x)))
-
-(defn distance [[a b c d]]
-  (+ (abs (- c a)) (abs (- d b))))
-
-(defn solution1 []
+(defn solution1 [input]
   (let [left (reduce min (map - (map distance input) (map first input)))
-        right (reduce max (map + (map distance input) (map first input)))])
-  (reduce accumulator 0 (range left right)))
+        right (reduce max (map + (map distance input) (map first input)))]
+    (reduce accumulator 0 (range left right))))
+
+(defn calc-y [[a b c d] x]
+  (let [d (distance [a b c d])
+        a-x (abs (- a x))
+        left (- (+ a-x b) d)
+        right (- (+ d b) a-x)]
+    [left right]))
+
+(defn union [[a b] [c d]]
+  (if (>= 1 (- c b))
+    [a (max b d)]
+    [a b c d]))
+
+(defn union-many [[a b & c]]
+;  (println a b c)
+  (if (nil? c)
+    (union a b)
+    (let [r (union a b)]
+      (if (= 2 (count r))
+        (union-many (cons r c))
+        r))))
+
+(defn solution2 []
+  (let [abc (map union-many
+                 (for [x (range 0 4000000)]
+                   (->> input
+                        (map #(calc-y % x))
+                        (filter #(<= (first %) (last %)))
+                        sort)))
+        b (drop-while #(= 2 (count %)) abc)
+        c (take-while #(= 2 (count %)) abc)
+        d (inc (second b))]
+    [(count c) d]))
