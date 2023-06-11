@@ -121,3 +121,55 @@ sensor_beacon(506169,3958647,-77667,3197309),
 sensor_beacon(2728744,23398,1618552,-433244),
 sensor_beacon(3215227,3077078,3677247,3140958),
 sensor_beacon(2209379,3030851,2121069,3230302)]).
+
+%----------------------------------------------
+union_intervals([A, B], [C, D], [A, B]) :- A =< B, C =< B, D =< B.
+union_intervals([A, B], [C, D], [A, D]) :- A =< B, C =< B, C >= A, B=< D.
+union_intervals([A, B], [C, D], [C, D]) :- C =< A, A =< B, B =< D.
+
+well_ordered([[A, B], [C, D]], [[A, B], [C, D]]) :- A =< C.
+well_ordered([[A, B], [C, D]], [[C, D], [A, B]]) :- A > C.
+
+gsort([A], [A]).
+gsort([A, B], C) :- well_ordered([A, B], C).
+gsort([A, B|Rest], Sorted) :- gsort([A, B], [C, D]), gsort(Rest, RestSorted), merge([C, D], RestSorted, Sorted), !.
+
+merge(X, [], X).
+merge([], X, X).
+merge([X|Xs], [Y|Ys], [X|Rest]) :- well_ordered([X, Y], [X, Y]), merge(Xs, [Y|Ys], Rest).
+merge([X|Xs], [Y|Ys], [Y|Rest]) :- \+ well_ordered([X, Y], [X, Y]), merge([X|Xs], Ys, Rest).
+
+filter_impossible_intervals([], []).
+filter_impossible_intervals([[A, B]|R], T) :- B < A, filter_impossible_intervals(R, T).
+filter_impossible_intervals([[A, B]|R], [[A, B]|T]) :- A =< B, filter_impossible_intervals(R, T).
+
+is_interrupted([[A, B], [C, D]|R]) :- Temp is B + 1, Temp < C.
+is_interrupted([[A, B], [C, D]|R]) :-
+    Temp is B + 1, Temp >= C,
+    union_intervals([A, B], [C, D], U), is_interrupted([U|R]).
+
+solve_for_y(sensor_beacon(Sx, Sy, Bx, By), X, [L, R]) :-
+    measure_distance(Sx, Sy, Bx, By, D),
+    A is Sx - X,
+    abs(A, A_ABS),
+    L is A_ABS + Sy - D,
+    R is D + Sy - A_ABS.
+
+solve_all_for_y([Sensor], X, [[L, R]]) :- solve_for_y(Sensor, X, [L, R]).
+solve_all_for_y([Sensor|Others], X, [[L, R]|OthersSolved]) :-
+    solve_for_y(Sensor, X, [L, R]),
+    solve_all_for_y(Others, X, OthersSolved).
+
+find_column_with_interruption(Sensors, X, X) :-
+    solve_all_for_y(Sensors, X, Intervals),
+    filter_impossible_intervals(Intervals, FilteredIntervals),
+    gsort(FilteredIntervals, SortedIntervals),
+    is_interrupted(SortedIntervals).
+
+find_column_with_interruption(Sensors, X, Result) :-
+    solve_all_for_y(Sensors, X, Intervals),
+    filter_impossible_intervals(Intervals, FilteredIntervals),
+    gsort(FilteredIntervals, SortedIntervals),
+    \+ is_interrupted(SortedIntervals),
+    X1 is X + 1,
+    find_column_with_interruption(Sensors, X1, Result).
