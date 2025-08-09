@@ -71,8 +71,8 @@
     acc))
 
 (defn solution1 [input]
-  (let [left (reduce min (map - (map distance input) (map first input)))
-        right (reduce max (map + (map distance input) (map first input)))]
+  (let [left (reduce min (map #(- (distance %) (first %)) input))
+        right (reduce max (map #(+ (distance %) (first %)) input))]
     (reduce accumulator 0 (range left right))))
 
 (defn calc-y [[a b c d] x]
@@ -107,3 +107,5 @@
         c (take-while #(= 2 (count %)) abc)
         d (inc (second b))]
     [(count c) d]))
+
+(defn main [& args] (println "solution" (solution1 input)))
